@@ -38,6 +38,7 @@ def index():
     REPOSITORY_DIR = DEPLOY_DIR.partition("/")[0]
     return render_template("index.html", deploy_url=DEPLOY_URL, repository_dir=REPOSITORY_DIR)
 
+# #FTPで本番環境にデータをpush
 # @app.route("/deploy", methods=["POST"])
 # def deploy():
 #     REPOSITORY_DIR = request.args.get("repository_dir")
@@ -60,6 +61,7 @@ def index():
 #     except Exception as e:
 #         return jsonify({"error": str(e)}), 500
 
+# 差分データをダウンロード
 @app.route("/download_diff", methods=["POST"])
 @auth.login_required
 def download_diff():
@@ -67,7 +69,7 @@ def download_diff():
     REPOSITORY_DIR_PATH = f"{STATIC_PATH}/{REPOSITORY_DIR}"
 
     try:
-        # ① 差分ファイル取得
+        # 差分ファイル取得
         result = subprocess.run(
             ["git", "diff", "--name-only", "HEAD~1", "HEAD"],
             cwd=REPOSITORY_DIR_PATH,
@@ -77,11 +79,11 @@ def download_diff():
 
         files = result.stdout.strip().split("\n")
 
-        # ② 一時ディレクトリ作成
+        # 一時ディレクトリ作成
         temp_dir = tempfile.mkdtemp()
         zip_path = os.path.join(temp_dir, "diff.zip")
 
-        # ③ zip作成
+        # zip作成
         with zipfile.ZipFile(zip_path, "w") as zipf:
             for file in files:
                 file_path = os.path.join(REPOSITORY_DIR_PATH, file)
@@ -89,16 +91,17 @@ def download_diff():
                 if os.path.exists(file_path):
                     zipf.write(file_path, arcname=file)
 
-        # ④ ダウンロード
+        # ダウンロード
         return send_file(zip_path, as_attachment=True)
 
     except Exception as e:
         return {"error": str(e)}, 500
 
+# スクリーンショットをpdfでダウンロード
 @app.route("/download_pdf", methods=["POST"])
 @auth.login_required
 def download_pdf():
-    CURRENT_URL=request.args.get("current_url")
+    CURRENT_URL=request.form.get("current_url")
 
     # 一時ファイル
     temp_dir = tempfile.mkdtemp()
@@ -106,7 +109,7 @@ def download_pdf():
     pdf_path = os.path.join(temp_dir, "output.pdf")
 
     try:
-        # ① スクリーンショット
+        # スクリーンショット
         with sync_playwright() as p:
             browser = p.chromium.launch(args=["--no-sandbox"])
             page = browser.new_page()
@@ -115,11 +118,11 @@ def download_pdf():
 
             browser.close()
 
-        # ② JPG → PDF
+        # JPG → PDF
         image = Image.open(img_path).convert("RGB")
         image.save(pdf_path, "PDF")
 
-        # ③ ダウンロード
+        # ダウンロード
         return send_file(pdf_path, as_attachment=True)
 
     except Exception as e:
