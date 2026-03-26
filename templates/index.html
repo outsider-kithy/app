@@ -2,7 +2,12 @@
 <html lang="ja">
     <head>
         <meta charset="utf8">
-        <title>プレビューツール</title>
+        <meta name="robots" content="noindex,nofollow">
+        <title>ステージングツール | outsider-staging.site</title>
+        <!--favicon-->
+        <link rel="shortcut icon" href="{{url_for('static', filename='img/favicon.ico')}}">
+
+        <!--CSS-->
         <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
     </head>
     <body>
@@ -16,16 +21,17 @@
                 <button type="submit" name="deploy">本番環境にデプロイする</button>
             </form> -->
             <form action="/download_diff?repository_dir={{ repository_dir }}" method="POST">
-                <button type="submit" name="download_diff">差分データをダウンロード</button>
+                <button type="submit" name="download_diff">差分</button>
             </form>
             {% endif %}
 
             <form id="pdfForm" method="POST" action="/download_pdf">
-                 <input type="hidden" name="current_url" id="current_url">
-                <button type="submit">PDFをダウンロード</button>
+                <input type="hidden" name="current_url" id="current_url">
+                <button type="submit" name="download_pdf">PDF</button>
             </form>
         </div>
 
+        <!--JS-->
         <script type="text/javascript" src="{{url_for('static', filename='script.js')}}"></script>
     </body>
 </html>
