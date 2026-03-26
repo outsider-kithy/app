@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf8">
+        <title>プレビューツール</title>
+        <link rel="stylesheet" href="{{url_for('static', filename='style.css')}}">
+    </head>
+    <body>
+        {% if deploy_url %}
+        <iframe id="previewFrame" src={{ deploy_url }}></iframe>
+        {% endif %}
+
+        <div id="control_area">
+            {% if repository_dir %}
+            <!-- <form action="/deploy?repository_dir={{ repository_dir }}" method="POST">
+                <button type="submit" name="deploy">本番環境にデプロイする</button>
+            </form> -->
+            <form action="/download_diff?repository_dir={{ repository_dir }}" method="POST">
+                <button type="submit" name="download_diff">差分データをダウンロード</button>
+            </form>
+            {% endif %}
+
+            <form id="pdfForm" method="POST" action="/download_pdf">
+                 <input type="hidden" name="current_url" id="current_url">
+                <button type="submit">PDFをダウンロード</button>
+            </form>
+        </div>
+
+        <script type="text/javascript" src="{{url_for('static', filename='script.js')}}"></script>
+    </body>
+</html>
