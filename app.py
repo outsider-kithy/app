@@ -98,6 +98,7 @@ def download_diff():
 @app.route("/download_pdf", methods=["POST"])
 @auth.login_required
 def download_pdf():
+    CURRENT_URL=request.args.get("current_url")
 
     # 一時ファイル
     temp_dir = tempfile.mkdtemp()
@@ -109,7 +110,7 @@ def download_pdf():
         with sync_playwright() as p:
             browser = p.chromium.launch(args=["--no-sandbox"])
             page = browser.new_page()
-            page.goto("/")
+            page.goto(CURRENT_URL)
             page.screenshot(path=img_path, full_page=True, type="jpeg", quality=90)
 
             browser.close()
